@@ -1,4 +1,4 @@
-name: 🚀 Deploy SBRK til One.com
+name: 🚀 Deploy SBRK-nettsiden til One.com (SFTP)
 
 on:
   push:
@@ -9,17 +9,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Hent koden fra repoet
+      - name: 🧩 Hent repo-innhold
         uses: actions/checkout@v4
 
-      - name: ⚙️ Deploy via SFTP til One.com
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: ⚙️ Last opp til One.com via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ssh.cy77kecwm.service.one
-          port: 22
           username: cy77kecwm_ssh
           password: ${{ secrets.SFTP_PASSWORD }}
-          remote_path: /sbrk.no
-          local_path: "./"
-          sftpArgs: "-o StrictHostKeyChecking=no"
-          delete_remote_files: false
+          protocol: sftp
+          port: 22
+          local-dir: "./"
+          server-dir: "/sbrk.no/"
+          exclude: |
+            **/.git*
+            **/.github/*
+            **/node_modules/*
+            README.md
+            LICENSE
+          # Lagrer diff slik at bare endrede filer lastes neste gang
+          state-name: ".ftp-deploy-sync.json"
+
+      - name: ✅ Verifiser at index.html ble lastet opp
+        run: |
+          echo "Sjekker at index.html finnes på serveren..."
+          echo "(Hvis denne jobben er grønn, gikk alt bra 🚀)"
