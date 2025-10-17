@@ -28,7 +28,7 @@ jobs:
           username: cy77kecwm_ssh
           password: ${{ secrets.SFTP_PASSWORD }}
           local_path: "./"
-          remote_path: "/"
+        remote_path: "/sbrk.no"
           sftpArgs: "-o StrictHostKeyChecking=no"
           delete_remote_files: false
           sftp_only: true
