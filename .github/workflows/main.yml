@@ -1,4 +1,4 @@
-name: 🚀 Deploy SBRK-nettsiden til One.com (SFTP)
+name: 🚀 Deploy SBRK til One.com (SFTP)
 
 on:
   push:
@@ -9,29 +9,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Hent repo-innhold
+      - name: 🧩 Checkout
         uses: actions/checkout@v4
 
-      - name: ⚙️ Last opp til One.com via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      # Precheck – stopp tidlig hvis passord mangler
+      - name: 🔒 Sjekk at SFTP_PASSWORD er satt
+        run: |
+          if [ -z "${{ secrets.SFTP_PASSWORD }}" ]; then
+            echo "❌ Mangler secret: SFTP_PASSWORD (Settings → Secrets → Actions)"; exit 1;
+          else
+            echo "✅ Secret SFTP_PASSWORD er satt";
+          fi
+
+      - name: ⚙️ Deploy via SFTP til One.com
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ssh.cy77kecwm.service.one
+          port: 22
           username: cy77kecwm_ssh
           password: ${{ secrets.SFTP_PASSWORD }}
-          protocol: sftp
-          port: 22
-          local-dir: "./"
-          server-dir: "/sbrk.no/"
+          local_path: "./"
+          remote_path: "/sbrk.no"
+          sftpArgs: "-o StrictHostKeyChecking=no"
           exclude: |
-            **/.git*
-            **/.github/*
-            **/node_modules/*
+            .git*
+            .github/*
             README.md
             LICENSE
-          # Lagrer diff slik at bare endrede filer lastes neste gang
-          state-name: ".ftp-deploy-sync.json"
-
-      - name: ✅ Verifiser at index.html ble lastet opp
-        run: |
-          echo "Sjekker at index.html finnes på serveren..."
-          echo "(Hvis denne jobben er grønn, gikk alt bra 🚀)"
+            node_modules/*
