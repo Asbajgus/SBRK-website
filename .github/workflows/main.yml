@@ -1,0 +1,33 @@
+name: 🚀 Deploy SBRK til One.com
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Hent koden fra repoet
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Deploy via SFTP til One.com
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          # --- One.com SFTP-detaljer ---
+          server: ssh.cy77kecwm.service.one
+          port: 22
+          username: cy77kecwm_ssh
+          password: ${{ secrets.SFTP_PASSWORD }}
+          remote_path: /public_html
+          local_path: "./"
+          sftpArgs: "-o StrictHostKeyChecking=no"
+
+          # --- Ekskluder unødvendige filer ---
+          exclude: |
+            .git*
+            .github/*
+            README.md
+            LICENSE
+            node_modules/*
