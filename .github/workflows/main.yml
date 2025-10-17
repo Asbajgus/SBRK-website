@@ -15,7 +15,6 @@ jobs:
       - name: ⚙️ Deploy via SFTP til One.com
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          # --- One.com SFTP-detaljer ---
           server: ssh.cy77kecwm.service.one
           port: 22
           username: cy77kecwm_ssh
@@ -23,11 +22,4 @@ jobs:
           remote_path: /public_html
           local_path: "./"
           sftpArgs: "-o StrictHostKeyChecking=no"
-
-          # --- Ekskluder unødvendige filer ---
-          exclude: |
-            .git*
-            .github/*
-            README.md
-            LICENSE
-            node_modules/*
+          delete_remote_files: false
