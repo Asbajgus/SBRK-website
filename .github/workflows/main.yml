@@ -9,19 +9,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧩 Checkout
+      - name: 🧩 Hent repo-innhold
         uses: actions/checkout@v4
 
-      # Precheck – stopp tidlig hvis passord mangler
-      - name: 🔒 Sjekk at SFTP_PASSWORD er satt
+      - name: 🔒 Sjekk at SFTP_PASSWORD finnes
         run: |
           if [ -z "${{ secrets.SFTP_PASSWORD }}" ]; then
-            echo "❌ Mangler secret: SFTP_PASSWORD (Settings → Secrets → Actions)"; exit 1;
+            echo "❌ Mangler secret: SFTP_PASSWORD"; exit 1;
           else
             echo "✅ Secret SFTP_PASSWORD er satt";
           fi
 
-      - name: ⚙️ Deploy via SFTP til One.com
+      - name: ⚙️ Last opp til One.com via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ssh.cy77kecwm.service.one
@@ -31,9 +30,5 @@ jobs:
           local_path: "./"
           remote_path: "/sbrk.no"
           sftpArgs: "-o StrictHostKeyChecking=no"
-          exclude: |
-            .git*
-            .github/*
-            README.md
-            LICENSE
-            node_modules/*
+          delete_remote_files: false
+          sftp_only: true
