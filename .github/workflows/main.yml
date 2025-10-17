@@ -19,7 +19,7 @@ jobs:
           port: 22
           username: cy77kecwm_ssh
           password: ${{ secrets.SFTP_PASSWORD }}
-          remote_path: /public_html
+          remote_path: public_html
           local_path: "./"
           sftpArgs: "-o StrictHostKeyChecking=no"
           delete_remote_files: false
